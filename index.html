@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProConvert — Clean Format Engine</title>
+    <title>ProConvert — Ultimate Batch Engine</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap');
 
@@ -17,19 +17,20 @@
             overflow-x: hidden;
         }
 
+        /* Рекламные блоки (скроются на мобилках) */
         .ad-zone {
-            width: 200px;
+            width: 180px;
             background: #11141b;
             border-left: 1px solid #1c212b;
             border-right: 1px solid #1c212b;
             display: flex; justify-content: center; align-items: center;
-            color: #1a1f29; font-weight: 800; font-size: 40px; flex-shrink: 0;
+            color: #1a1f29; font-weight: 800; font-size: 30px; flex-shrink: 0;
             text-transform: uppercase; letter-spacing: 4px;
         }
 
         .app-wrapper {
             flex: 1; display: flex; flex-direction: column;
-            padding: 40px; max-width: 1000px; margin: 0 auto;
+            padding: 40px; max-width: 900px; margin: 0 auto;
             min-height: 100vh; box-sizing: border-box;
         }
 
@@ -47,22 +48,18 @@
             height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center;
             border: 2px dashed rgba(255, 255, 255, 0.08);
             border-radius: 12px; color: #4b5563; font-size: 15px;
-            cursor: pointer; transition: 0.2s; gap: 8px;
+            cursor: pointer; transition: 0.2s; gap: 8px; text-align: center;
         }
         .dropzone:hover, .dropzone.dragover { border-color: #3b82f6; background: rgba(59, 130, 246, 0.03); color: #3b82f6; }
 
-        /* ВЫБОР ФОРМАТА (БЕЗ ПОДПИСЕЙ) */
         .format-selector {
-            position: relative;
-            background: #0d1117;
+            position: relative; background: #0d1117;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            cursor: pointer;
+            border-radius: 12px; cursor: pointer;
         }
 
         .selected-format {
-            padding: 15px 20px;
-            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
             font-size: 14px; font-weight: 600; color: #3b82f6;
         }
 
@@ -71,8 +68,7 @@
             max-height: 350px; overflow-y: auto;
             background: #0f172a; border: 1px solid rgba(59, 130, 246, 0.3);
             border-radius: 12px; margin-bottom: 10px;
-            display: none; z-index: 100; padding: 15px;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
+            display: none; z-index: 100; padding: 15px; box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
         }
         .format-dropdown.show { display: block; }
 
@@ -100,7 +96,7 @@
             padding: 12px 20px; border-radius: 12px; gap: 15px;
         }
 
-        .file-name { flex: 1; font-size: 13px; color: #9ca3af; }
+        .file-name { flex: 1; font-size: 13px; color: #9ca3af; overflow: hidden; text-overflow: ellipsis; }
         .file-name span { color: #3b82f6; font-weight: 600; }
 
         .download-all-container { margin-top: 20px; display: none; justify-content: center; }
@@ -121,10 +117,10 @@
 
         .contact-link {
             font-size: 14px; color: #4b5563; cursor: pointer;
-            transition: color 0.3s ease, transform 0.2s ease; font-weight: 500;
+            transition: color 0.3s ease; font-weight: 500;
             display: inline-block; margin-bottom: 20px; position: relative;
         }
-        .contact-link:hover { color: #3b82f6; transform: translateY(-1px); }
+        .contact-link:hover { color: #3b82f6; }
 
         .tooltip { 
             position: absolute; top: -35px; left: 50%; transform: translateX(-50%); 
@@ -133,12 +129,20 @@
         }
         .tooltip.show { opacity: 1; }
 
-        .legal-links { display: flex; justify-content: center; gap: 20px; margin-bottom: 15px; flex-wrap: wrap; }
-        .legal-item { font-size: 10px; color: #1e293b; text-decoration: none; text-transform: uppercase; letter-spacing: 0.5px; }
-        .copyright-notice { font-size: 10px; color: #161b22; max-width: 700px; margin: 0 auto; line-height: 1.5; }
+        .legal-links { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
+        .legal-item { font-size: 9px; color: #1e293b; text-decoration: none; text-transform: uppercase; }
+        .copyright-notice { font-size: 9px; color: #161b22; max-width: 600px; margin: 0 auto; line-height: 1.4; }
 
-        .format-dropdown::-webkit-scrollbar { width: 5px; }
-        .format-dropdown::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+        /* МОБИЛЬНАЯ АДАПТАЦИЯ */
+        @media (max-width: 800px) {
+            body { flex-direction: column; }
+            .ad-zone { display: none; } /* Скрываем рекламу на телефонах */
+            .app-wrapper { padding: 20px; }
+            .format-grid { grid-template-columns: repeat(2, 1fr); } /* 2 колонки вместо 4 */
+            .file-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .btn-group { width: 100%; justify-content: space-between; }
+            .logo { font-size: 18px; }
+        }
     </style>
 </head>
 <body>
@@ -148,13 +152,13 @@
     <div class="app-wrapper">
         <header>
             <div class="logo">ProConvert</div>
-            <div style="font-size: 11px; color: #1e293b;">CLEAN VIEW v4.2</div>
+            <div style="font-size: 10px; color: #1e293b;">MOBILE READY v5.0</div>
         </header>
 
         <div class="main-controls">
             <div class="dropzone" id="dropzone">
-                <strong>Drag & Drop Assets</strong>
-                <span style="font-size: 11px; opacity: 0.5;">Batch selection enabled</span>
+                <strong>Tap or Drag Assets</strong>
+                <span style="font-size: 11px; opacity: 0.5;">Supports multiple files</span>
                 <input type="file" id="fileInput" multiple hidden accept="image/*">
             </div>
 
@@ -171,7 +175,6 @@
                         <div class="format-option" data-val="image/webp">WEBP</div>
                         <div class="format-option" data-val="image/gif">GIF</div>
                         <div class="format-option" data-val="image/avif">AVIF</div>
-                        <div class="format-option" data-val="image/jxl">JXL</div>
                         <div class="format-option" data-val="image/heic">HEIC</div>
                         <div class="format-option" data-val="image/x-icon">ICO</div>
                         <div class="format-option" data-val="image/tiff">TIFF</div>
@@ -181,18 +184,17 @@
                         <div class="format-option" data-val="image/svg+xml">SVG</div>
                         <div class="format-option" data-val="application/postscript">EPS</div>
                         <div class="format-option" data-val="application/illustrator">AI</div>
-                        <div class="format-option" data-val="application/dxf">DXF</div>
                     </div>
                 </div>
             </div>
 
-            <button class="action-btn" onclick="process()">EXECUTE CONVERSION</button>
+            <button class="action-btn" onclick="process()">START CONVERSION</button>
         </div>
 
         <div class="file-list" id="list"></div>
 
         <div class="download-all-container" id="allContainer">
-            <button class="download-all-btn" onclick="downloadAll()">DOWNLOAD ALL READY FILES</button>
+            <button class="download-all-btn" onclick="downloadAll()">DOWNLOAD EVERYTHING</button>
         </div>
 
         <footer>
@@ -203,16 +205,14 @@
 
             <div class="legal-links">
                 <a href="#" class="legal-item">Privacy Policy</a>
-                <a href="#" class="legal-item">Terms of Service</a>
+                <a href="#" class="legal-item">Terms</a>
                 <a href="#" class="legal-item">Compliance</a>
-                <a href="#" class="legal-item">Cookie Policy</a>
                 <a href="#" class="legal-item">SLA</a>
             </div>
 
             <div class="copyright-notice">
-                © 2026 ProConvert Global Systems. All rights reserved. 
-                Local engine encryption active. No data telemetry is sent to external servers.
-                DMCA & GDPR Compliant Infrastructure.
+                © 2026 ProConvert. DMCA Protected. Local processing only. 
+                Data remains on your device. High-performance client-side rendering.
             </div>
         </footer>
     </div>
@@ -230,6 +230,7 @@
     let queue = [];
     let selectedMime = "image/png";
 
+    // Меню выбора формата
     document.getElementById('formatToggle').onclick = (e) => {
         dropdown.classList.toggle('show');
         e.stopPropagation();
@@ -246,6 +247,7 @@
         };
     });
 
+    // Обработка файлов
     function handleFiles(files) {
         Array.from(files).forEach(f => {
             if (f.type.startsWith('image/')) {
