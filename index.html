@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProConvert — Ultimate Batch Engine</title>
+    <title>ProConvert — Mobile App</title>
+    <link rel="manifest" href="manifest.json">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap');
 
@@ -17,7 +18,6 @@
             overflow-x: hidden;
         }
 
-        /* Рекламные блоки (скроются на мобилках) */
         .ad-zone {
             width: 180px;
             background: #11141b;
@@ -133,32 +133,28 @@
         .legal-item { font-size: 9px; color: #1e293b; text-decoration: none; text-transform: uppercase; }
         .copyright-notice { font-size: 9px; color: #161b22; max-width: 600px; margin: 0 auto; line-height: 1.4; }
 
-        /* МОБИЛЬНАЯ АДАПТАЦИЯ */
         @media (max-width: 800px) {
             body { flex-direction: column; }
-            .ad-zone { display: none; } /* Скрываем рекламу на телефонах */
+            .ad-zone { display: none; }
             .app-wrapper { padding: 20px; }
-            .format-grid { grid-template-columns: repeat(2, 1fr); } /* 2 колонки вместо 4 */
+            .format-grid { grid-template-columns: repeat(2, 1fr); }
             .file-item { flex-direction: column; align-items: flex-start; gap: 10px; }
             .btn-group { width: 100%; justify-content: space-between; }
-            .logo { font-size: 18px; }
         }
     </style>
 </head>
 <body>
-
     <div class="ad-zone">AD</div>
-
     <div class="app-wrapper">
         <header>
             <div class="logo">ProConvert</div>
-            <div style="font-size: 10px; color: #1e293b;">MOBILE READY v5.0</div>
+            <div style="font-size: 10px; color: #1e293b;">PWA READY v5.1</div>
         </header>
 
         <div class="main-controls">
             <div class="dropzone" id="dropzone">
-                <strong>Tap or Drag Assets</strong>
-                <span style="font-size: 11px; opacity: 0.5;">Supports multiple files</span>
+                <strong>Tap to Upload</strong>
+                <span style="font-size: 11px; opacity: 0.5;">Select images to convert</span>
                 <input type="file" id="fileInput" multiple hidden accept="image/*">
             </div>
 
@@ -167,7 +163,6 @@
                     <span id="currentTarget">Target: PNG</span>
                     <span>▼</span>
                 </div>
-                
                 <div class="format-dropdown" id="dropdown">
                     <div class="format-grid">
                         <div class="format-option active" data-val="image/png">PNG</div>
@@ -175,26 +170,21 @@
                         <div class="format-option" data-val="image/webp">WEBP</div>
                         <div class="format-option" data-val="image/gif">GIF</div>
                         <div class="format-option" data-val="image/avif">AVIF</div>
-                        <div class="format-option" data-val="image/heic">HEIC</div>
                         <div class="format-option" data-val="image/x-icon">ICO</div>
                         <div class="format-option" data-val="image/tiff">TIFF</div>
                         <div class="format-option" data-val="image/bmp">BMP</div>
                         <div class="format-option" data-val="application/pdf">PDF</div>
-                        <div class="format-option" data-val="image/vnd.adobe.photoshop">PSD</div>
                         <div class="format-option" data-val="image/svg+xml">SVG</div>
-                        <div class="format-option" data-val="application/postscript">EPS</div>
-                        <div class="format-option" data-val="application/illustrator">AI</div>
                     </div>
                 </div>
             </div>
 
-            <button class="action-btn" onclick="process()">START CONVERSION</button>
+            <button class="action-btn" onclick="process()">CONVERT NOW</button>
         </div>
 
         <div class="file-list" id="list"></div>
-
         <div class="download-all-container" id="allContainer">
-            <button class="download-all-btn" onclick="downloadAll()">DOWNLOAD EVERYTHING</button>
+            <button class="download-all-btn" onclick="downloadAll()">DOWNLOAD ALL</button>
         </div>
 
         <footer>
@@ -202,24 +192,22 @@
                 <span class="tooltip" id="copyTooltip">Copied!</span>
                 ProConvert1@gmail.com
             </div>
-
             <div class="legal-links">
                 <a href="#" class="legal-item">Privacy Policy</a>
                 <a href="#" class="legal-item">Terms</a>
                 <a href="#" class="legal-item">Compliance</a>
-                <a href="#" class="legal-item">SLA</a>
             </div>
-
-            <div class="copyright-notice">
-                © 2026 ProConvert. DMCA Protected. Local processing only. 
-                Data remains on your device. High-performance client-side rendering.
-            </div>
+            <div class="copyright-notice">© 2026 ProConvert App. All rights reserved.</div>
         </footer>
     </div>
-
     <div class="ad-zone">AD</div>
 
 <script>
+    // Регистрация Service Worker для PWA
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js');
+    }
+
     const input = document.getElementById('fileInput');
     const list = document.getElementById('list');
     const dropzone = document.getElementById('dropzone');
@@ -230,7 +218,6 @@
     let queue = [];
     let selectedMime = "image/png";
 
-    // Меню выбора формата
     document.getElementById('formatToggle').onclick = (e) => {
         dropdown.classList.toggle('show');
         e.stopPropagation();
@@ -247,7 +234,6 @@
         };
     });
 
-    // Обработка файлов
     function handleFiles(files) {
         Array.from(files).forEach(f => {
             if (f.type.startsWith('image/')) {
@@ -284,7 +270,7 @@
     }
 
     async function process() {
-        const label = selectedMime.split('/').pop().replace('jpeg', 'jpg').replace('vnd.adobe.photoshop', 'psd').replace('svg+xml', 'svg').toUpperCase();
+        const label = selectedMime.split('/').pop().replace('jpeg', 'jpg').replace('svg+xml', 'svg').toUpperCase();
         for(let i=0; i<queue.length; i++) {
             if(queue[i].done) continue;
             queue[i].blob = await new Promise(resolve => {
