@@ -1,318 +1,272 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProConvert — Mobile App</title>
-    <link rel="manifest" href="manifest.json">
+    <title>Сервис — Начните зарабатывать прямо сейчас</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap');
-
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
         body {
-            margin: 0; padding: 0;
-            font-family: 'Inter', sans-serif;
-            background: #070a12;
-            color: white;
-            display: flex;
+            background: #0b0e14;
             min-height: 100vh;
-            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
-
-        .ad-zone {
-            width: 180px;
-            background: #11141b;
-            border-left: 1px solid #1c212b;
-            border-right: 1px solid #1c212b;
-            display: flex; justify-content: center; align-items: center;
-            color: #1a1f29; font-weight: 800; font-size: 30px; flex-shrink: 0;
-            text-transform: uppercase; letter-spacing: 4px;
+        .card {
+            max-width: 420px;
+            width: 100%;
+            background: #131a22;
+            border-radius: 32px;
+            padding: 28px 20px 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            border: 1px solid #2a3340;
+            color: #f0f3f8;
         }
-
-        .app-wrapper {
-            flex: 1; display: flex; flex-direction: column;
-            padding: 40px; max-width: 900px; margin: 0 auto;
-            min-height: 100vh; box-sizing: border-box;
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-align: center;
+            margin-bottom: 6px;
         }
-
-        header { margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; opacity: 0.6; }
-        .logo { font-size: 20px; font-weight: 600; color: #3b82f6; }
-
-        .main-controls {
-            display: flex; flex-direction: column; gap: 20px;
-            background: rgba(255, 255, 255, 0.02);
-            padding: 25px; border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
+        .title span {
+            background: linear-gradient(135deg, #f5b042, #f7d875);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-
-        .dropzone {
-            height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border: 2px dashed rgba(255, 255, 255, 0.08);
-            border-radius: 12px; color: #4b5563; font-size: 15px;
-            cursor: pointer; transition: 0.2s; gap: 8px; text-align: center;
+        .sub-title {
+            text-align: center;
+            font-size: 16px;
+            color: #a0b3cc;
+            margin-bottom: 24px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
         }
-        .dropzone:hover, .dropzone.dragover { border-color: #3b82f6; background: rgba(59, 130, 246, 0.03); color: #3b82f6; }
-
-        .format-selector {
-            position: relative; background: #0d1117;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px; cursor: pointer;
+        .login-btn {
+            display: block;
+            width: 100%;
+            background: #2a8bf2;
+            border: none;
+            border-radius: 60px;
+            padding: 14px 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 28px;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(42,139,242,0.3);
         }
-
-        .selected-format {
-            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
-            font-size: 14px; font-weight: 600; color: #3b82f6;
+        .login-btn:hover {
+            background: #1f7ae0;
+            transform: scale(1.01);
         }
-
-        .format-dropdown {
-            position: absolute; bottom: 100%; left: 0; width: 100%;
-            max-height: 350px; overflow-y: auto;
-            background: #0f172a; border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 12px; margin-bottom: 10px;
-            display: none; z-index: 100; padding: 15px; box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
+        .plans {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 30px;
         }
-        .format-dropdown.show { display: block; }
-
-        .format-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .format-option {
-            padding: 12px; font-size: 12px; text-align: center;
-            background: rgba(255,255,255,0.03); border-radius: 8px;
-            transition: 0.2s; color: #9ca3af; font-weight: 500;
+        .plan {
+            background: #1e2732;
+            border-radius: 20px;
+            padding: 16px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #2c3846;
+            transition: 0.2s;
+            cursor: default;
         }
-        .format-option:hover { background: #1e293b; color: white; }
-        .format-option.active { background: #3b82f6; color: white; }
-
-        .action-btn {
-            padding: 16px; border-radius: 10px; border: none;
-            background: #3b82f6; color: white; font-weight: 600;
-            font-size: 14px; cursor: pointer; transition: 0.2s;
+        .plan:hover {
+            border-color: #4a5b70;
+            background: #232e3b;
         }
-        .action-btn:hover { background: #2563eb; transform: translateY(-1px); }
-
-        .file-list { margin-top: 25px; display: flex; flex-direction: column; gap: 8px; }
-        .file-item {
-            display: flex; align-items: center;
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            padding: 12px 20px; border-radius: 12px; gap: 15px;
+        .plan-left {
+            display: flex;
+            flex-direction: column;
         }
-
-        .file-name { flex: 1; font-size: 13px; color: #9ca3af; overflow: hidden; text-overflow: ellipsis; }
-        .file-name span { color: #3b82f6; font-weight: 600; }
-
-        .download-all-container { margin-top: 20px; display: none; justify-content: center; }
-        .download-all-btn {
-            background: transparent; color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3);
-            padding: 12px 30px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+        .plan-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
         }
-
-        .btn-group { display: flex; gap: 6px; }
-        .btn-ui { padding: 6px 14px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; border: none; }
-        .download { background: #3b82f6; color: white; }
-        .delete { background: transparent; color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.1); }
-
-        footer {
-            margin-top: auto; padding: 40px 0 20px; text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.03);
+        .plan-features {
+            font-size: 13px;
+            color: #9aafca;
+            margin-top: 4px;
+            line-height: 1.4;
         }
-
-        .contact-link {
-            font-size: 14px; color: #4b5563; cursor: pointer;
-            transition: color 0.3s ease; font-weight: 500;
-            display: inline-block; margin-bottom: 20px; position: relative;
+        .plan-price {
+            font-size: 22px;
+            font-weight: 700;
+            color: #f5b042;
+            background: #2a3340;
+            padding: 6px 14px;
+            border-radius: 40px;
+            white-space: nowrap;
+            letter-spacing: 0.2px;
         }
-        .contact-link:hover { color: #3b82f6; }
-
-        .tooltip { 
-            position: absolute; top: -35px; left: 50%; transform: translateX(-50%); 
-            background: #3b82f6; color: white; padding: 4px 12px; border-radius: 6px; 
-            font-size: 10px; opacity: 0; transition: 0.2s; pointer-events: none; 
+        .plan-price small {
+            font-size: 13px;
+            font-weight: 400;
+            color: #a0b3cc;
+            margin-left: 2px;
         }
-        .tooltip.show { opacity: 1; }
-
-        .legal-links { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap; }
-        .legal-item { font-size: 9px; color: #1e293b; text-decoration: none; text-transform: uppercase; }
-        .copyright-notice { font-size: 9px; color: #161b22; max-width: 600px; margin: 0 auto; line-height: 1.4; }
-
-        @media (max-width: 800px) {
-            body { flex-direction: column; }
-            .ad-zone { display: none; }
-            .app-wrapper { padding: 20px; }
-            .format-grid { grid-template-columns: repeat(2, 1fr); }
-            .file-item { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .btn-group { width: 100%; justify-content: space-between; }
+        .trial-section {
+            background: #1a232e;
+            border-radius: 20px;
+            padding: 18px 18px 14px;
+            border: 1px dashed #3f5066;
+            margin-bottom: 18px;
+        }
+        .trial-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .trial-left {
+            display: flex;
+            flex-direction: column;
+        }
+        .trial-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #b8d0f0;
+        }
+        .trial-features {
+            font-size: 13px;
+            color: #9aafca;
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+        .trial-price {
+            font-size: 22px;
+            font-weight: 700;
+            color: #6f8fbc;
+            background: #2a3340;
+            padding: 6px 14px;
+            border-radius: 40px;
+            white-space: nowrap;
+        }
+        .trial-price small {
+            font-size: 13px;
+            font-weight: 400;
+            color: #8aa2c0;
+        }
+        .footer-note {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #6d839f;
+            padding: 8px 4px 0;
+            border-top: 1px solid #1f2936;
+            margin-top: 6px;
+        }
+        .footer-note span:last-child {
+            background: #1e2732;
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            color: #b0c7e0;
+        }
+        .badge {
+            display: inline-block;
+            background: #2a8bf2;
+            padding: 2px 12px;
+            border-radius: 30px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #fff;
+            margin-left: 6px;
+        }
+        @media (max-width: 440px) {
+            .card { padding: 20px 14px; }
+            .plan { padding: 14px 14px; flex-wrap: wrap; gap: 8px; }
+            .plan-price { font-size: 20px; padding: 4px 12px; }
+            .trial-row { flex-wrap: wrap; gap: 8px; }
+            .title { font-size: 24px; }
         }
     </style>
 </head>
 <body>
-    <div class="ad-zone">AD</div>
-    <div class="app-wrapper">
-        <header>
-            <div class="logo">ProConvert</div>
-            <div style="font-size: 10px; color: #1e293b;">PWA READY v5.1</div>
-        </header>
+    <div class="card">
+        <!-- Заголовок + Войти -->
+        <div class="title"><span>НАЗВАНИЕ</span></div>
+        <div class="sub-title">Войти</div>
 
-        <div class="main-controls">
-            <div class="dropzone" id="dropzone">
-                <strong>Tap to Upload</strong>
-                <span style="font-size: 11px; opacity: 0.5;">Select images to convert</span>
-                <input type="file" id="fileInput" multiple hidden accept="image/*">
+        <!-- Кнопка Войти -->
+        <button class="login-btn" onclick="alert('Форма входа (демо)')">Войти</button>
+
+        <!-- Тарифы -->
+        <div class="plans">
+            <div class="plan">
+                <div class="plan-left">
+                    <div class="plan-name">Starter <span class="badge">базовый</span></div>
+                    <div class="plan-features">✔ всегда онлайн<br>✔ авто-ответчик<br>✔ статистика продаж</div>
+                </div>
+                <div class="plan-price">69<small>₽</small></div>
             </div>
 
-            <div class="format-selector" id="formatToggle">
-                <div class="selected-format">
-                    <span id="currentTarget">Target: PNG</span>
-                    <span>▼</span>
+            <div class="plan">
+                <div class="plan-left">
+                    <div class="plan-name">Medium <span class="badge">популярный</span></div>
+                    <div class="plan-features">✔ авто-выдача<br>✔ авто-подтверждение<br>✔ чат-бот</div>
                 </div>
-                <div class="format-dropdown" id="dropdown">
-                    <div class="format-grid">
-                        <div class="format-option active" data-val="image/png">PNG</div>
-                        <div class="format-option" data-val="image/jpeg">JPG</div>
-                        <div class="format-option" data-val="image/webp">WEBP</div>
-                        <div class="format-option" data-val="image/gif">GIF</div>
-                        <div class="format-option" data-val="image/avif">AVIF</div>
-                        <div class="format-option" data-val="image/x-icon">ICO</div>
-                        <div class="format-option" data-val="image/tiff">TIFF</div>
-                        <div class="format-option" data-val="image/bmp">BMP</div>
-                        <div class="format-option" data-val="application/pdf">PDF</div>
-                        <div class="format-option" data-val="image/svg+xml">SVG</div>
-                    </div>
-                </div>
+                <div class="plan-price">129<small>₽</small></div>
             </div>
 
-            <button class="action-btn" onclick="process()">CONVERT NOW</button>
+            <div class="plan">
+                <div class="plan-left">
+                    <div class="plan-name">Hard <span class="badge">макс.</span></div>
+                    <div class="plan-features">✔ авто-выставление<br>✔ авто-поднятие<br>✔ полная автоматизация</div>
+                </div>
+                <div class="plan-price">199<small>₽</small></div>
+            </div>
         </div>
 
-        <div class="file-list" id="list"></div>
-        <div class="download-all-container" id="allContainer">
-            <button class="download-all-btn" onclick="downloadAll()">DOWNLOAD ALL</button>
+        <!-- Пробный период -->
+        <div class="trial-section">
+            <div class="trial-row">
+                <div class="trial-left">
+                    <div class="trial-name">Пробный период</div>
+                    <div class="trial-features">✔ всегда онлайн<br>✔ авто-ответчик<br>✔ статистика продаж</div>
+                </div>
+                <div class="trial-price">0<small>₽</small></div>
+            </div>
         </div>
 
-        <footer>
-            <div class="contact-link" onclick="copyEmail()">
-                <span class="tooltip" id="copyTooltip">Copied!</span>
-                ProConvert1@gmail.com
-            </div>
-            <div class="legal-links">
-                <a href="#" class="legal-item">Privacy Policy</a>
-                <a href="#" class="legal-item">Terms</a>
-                <a href="#" class="legal-item">Compliance</a>
-            </div>
-            <div class="copyright-notice">© 2026 ProConvert App. All rights reserved.</div>
-        </footer>
+        <!-- Футер (как на скриншоте) -->
+        <div class="footer-note">
+            <span>Главный экран (1)</span>
+            <span>⚡</span>
+        </div>
     </div>
-    <div class="ad-zone">AD</div>
 
-<script>
-    // Регистрация Service Worker для PWA
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js');
-    }
-
-    const input = document.getElementById('fileInput');
-    const list = document.getElementById('list');
-    const dropzone = document.getElementById('dropzone');
-    const dropdown = document.getElementById('dropdown');
-    const allContainer = document.getElementById('allContainer');
-    const targetLabel = document.getElementById('currentTarget');
-    
-    let queue = [];
-    let selectedMime = "image/png";
-
-    document.getElementById('formatToggle').onclick = (e) => {
-        dropdown.classList.toggle('show');
-        e.stopPropagation();
-    };
-    window.onclick = () => dropdown.classList.remove('show');
-
-    document.querySelectorAll('.format-option').forEach(opt => {
-        opt.onclick = (e) => {
-            document.querySelectorAll('.format-option').forEach(o => o.classList.remove('active'));
-            opt.classList.add('active');
-            selectedMime = opt.dataset.val;
-            targetLabel.innerText = `Target: ${opt.innerText}`;
-            e.stopPropagation();
-        };
-    });
-
-    function handleFiles(files) {
-        Array.from(files).forEach(f => {
-            if (f.type.startsWith('image/')) {
-                queue.push({ f, done: false, blob: null, resFormat: '' });
-            }
-        });
-        render();
-    }
-
-    dropzone.onclick = () => input.click();
-    input.onchange = () => handleFiles(input.files);
-    dropzone.ondragover = (e) => { e.preventDefault(); dropzone.classList.add('dragover'); };
-    dropzone.ondragleave = () => dropzone.classList.remove('dragover');
-    dropzone.ondrop = (e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); };
-
-    function render() {
-        list.innerHTML = queue.map((item, i) => {
-            let name = item.f.name;
-            if (item.done) {
-                const base = name.substring(0, name.lastIndexOf('.'));
-                name = `${base}.<span>${item.resFormat.toLowerCase()}</span>`;
-            }
-            return `
-                <div class="file-item">
-                    <div class="file-name">${name}</div>
-                    <div class="btn-group">
-                        ${item.done ? `<button class="btn-ui download" onclick="dl(${i})">Download</button>` : ''}
-                        <button class="btn-ui delete" onclick="remove(${i})">Delete</button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-        allContainer.style.display = queue.some(q => q.done) ? 'flex' : 'none';
-    }
-
-    async function process() {
-        const label = selectedMime.split('/').pop().replace('jpeg', 'jpg').replace('svg+xml', 'svg').toUpperCase();
-        for(let i=0; i<queue.length; i++) {
-            if(queue[i].done) continue;
-            queue[i].blob = await new Promise(resolve => {
-                const img = new Image();
-                const url = URL.createObjectURL(queue[i].f);
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width; canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-                    canvas.toBlob(b => { URL.revokeObjectURL(url); resolve(b); }, selectedMime);
-                };
-                img.src = url;
+    <script>
+        // лёгкая интерактивность: при клике на тариф — демо-уведомление
+        document.querySelectorAll('.plan').forEach((el, i) => {
+            el.addEventListener('click', function() {
+                const name = this.querySelector('.plan-name')?.innerText?.trim() || 'тариф';
+                alert(`Вы выбрали тариф «${name}». Оформление (демо).`);
             });
-            queue[i].done = true;
-            queue[i].resFormat = label;
-            render();
-        }
-    }
-
-    function remove(i) { queue.splice(i, 1); render(); }
-    function dl(i) {
-        const a = document.createElement('a');
-        const base = queue[i].f.name.substring(0, queue[i].f.name.lastIndexOf('.'));
-        a.href = URL.createObjectURL(queue[i].blob);
-        a.download = `${base}.${queue[i].resFormat.toLowerCase()}`;
-        a.click();
-    }
-
-    function downloadAll() {
-        queue.forEach((item, index) => {
-            if (item.done) setTimeout(() => dl(index), index * 200);
         });
-    }
-
-    function copyEmail() {
-        navigator.clipboard.writeText("ProConvert1@gmail.com").then(() => {
-            const t = document.getElementById('copyTooltip');
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 1500);
+        document.querySelector('.trial-section').addEventListener('click', function() {
+            alert('Пробный период — 0₽. Активация (демо).');
         });
-    }
-</script>
+    </script>
 </body>
 </html>
